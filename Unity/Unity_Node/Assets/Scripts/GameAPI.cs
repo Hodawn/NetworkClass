@@ -61,13 +61,13 @@ using (UnityWebRequest request=new UnityWebRequest($"{baseUrl}/register", "POST"
 
                 try
                 {
-                    var reqponseData = JsonConvert.DeserializeObject > Dictionary<string, object> > (responseBody);
+                    var responseData = JsonConvert.DeserializeObject <Dictionary<string, object> > (responseBody);
 
                     PlayerModel playerModel = new PlayerModel(responseData["playerName"].ToString())
                     {
                         metal = Convert.ToInt32(responseData["metal"]),
-                        crystal = Convert.ToInt32(reqponseData["crystal"]),
-                        deuterium = Convert.ToInt32(reqponseData["deuterium"]),
+                        crystal = Convert.ToInt32(responseData["crystal"]),
+                        deuterium = Convert.ToInt32(responseData["deuterium"]),
                         Planets = new List<PlanetModel>()
                     };
                     onSuccess?.Invoke(playerModel);
