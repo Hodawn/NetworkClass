@@ -7,6 +7,7 @@ using UnityEngine.Networking;
 using System.Text;
 using Unity.VisualScripting;
 using UnityEngine.Rendering;
+
 public class UnityToNode : MonoBehaviour
 {
     public Button btnGetExample;
@@ -24,15 +25,19 @@ public class UnityToNode : MonoBehaviour
         this.btnResDataExample.onClick.AddListener(() =>
         {
             var url = string.Format("{0}:{1}/{2}", host, port, resUrl);
+
             StartCoroutine(this.GetData(url, (raw) =>
             {
                 var res = JsonConvert.DeserializeObject<Protocols.Packets.res_data>(raw);
+
                 foreach (var user in res.result)
                 {
                     Debug.LogFormat("{0}, {1}", user.id, user.data);
                 }
             }));
         });
+
+
         this.btnPostExample.onClick.AddListener(() =>
         {
             var url = string.Format("{0}:{1}/{2}", host, port, postUrl);
@@ -42,15 +47,18 @@ public class UnityToNode : MonoBehaviour
             req.id = id;
             req.data = data;
             var json = JsonConvert.SerializeObject(req);            //(클래스 -> JSON)
+
             StartCoroutine(this.PostData(url, json, (raw) =>
             {
                 Protocols.Packets.common res = JsonConvert.DeserializeObject<Protocols.Packets.common>(raw);
                 Debug.LogFormat("{0}, {1}", res.cmd, res.message);
             }));
         });
+
         this.btnGetExample.onClick.AddListener(() =>
         {
             var url = string.Format("{0}:{1}/{2}", host, port, idUrl);
+
             Debug.Log(url);
             StartCoroutine(this.GetData(url, (raw) =>
             {
@@ -59,10 +67,12 @@ public class UnityToNode : MonoBehaviour
             }));
         });
     }
+
     private IEnumerator GetData(string url, System.Action<string> callback)
     {
         var webRequest = UnityWebRequest.Get(url);
         yield return webRequest.SendWebRequest();
+
         Debug.Log("Get : " + webRequest.downloadHandler.text);
         if (webRequest.result == UnityWebRequest.Result.ConnectionError
             || webRequest.result == UnityWebRequest.Result.ProtocolError)
@@ -74,14 +84,18 @@ public class UnityToNode : MonoBehaviour
             callback(webRequest.downloadHandler.text);
         }
     }
+
     private IEnumerator PostData(string url, string json, System.Action<string> callback)
     {
         var webRequest = new UnityWebRequest(url, "POST");
         var bodyRaw = Encoding.UTF8.GetBytes(json);         //직렬화 
+
         webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
         webRequest.downloadHandler = new DownloadHandlerBuffer();
         webRequest.SetRequestHeader("Content-Type", "application/json");
+
         yield return webRequest.SendWebRequest();
+
         if (webRequest.result == UnityWebRequest.Result.ConnectionError
             || webRequest.result == UnityWebRequest.Result.ProtocolError)
         {
@@ -93,4 +107,5 @@ public class UnityToNode : MonoBehaviour
         }
         webRequest.Dispose();
     }
+
 }
