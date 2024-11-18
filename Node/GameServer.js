@@ -44,7 +44,7 @@ app.post('/login', async (req, res)=>{
 app.get('/inventory/:playerId',async(req,res)=>{
     try{
         const[inventory]=await pool.query(
-            'SELECT i.* inv.quantity FROM inventories inv JOIN items i ON inv.item_id=i.item_id WHERE inv.player_id=?',
+            `SELECT i.* , inv.quantity FROM inventories inv JOIN items i ON inv.item_id=i.item_id WHERE inv.player_id=?`,
             [req.params.playerId]
         );
         res.json(inventory);
